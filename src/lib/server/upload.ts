@@ -12,6 +12,11 @@ export async function saveFile(file: File): Promise<string> {
     throw new Error('File too large (max 5MB)');
   }
   const filename = `${crypto.randomUUID()}.${ext}`;
-  const blob = await put(filename, file, { access: 'public' });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const blob = await put(filename, buffer, {
+    access: 'public',
+    contentType: file.type || `image/${ext === 'svg' ? 'svg+xml' : ext}`,
+    addRandomSuffix: false,
+  });
   return blob.url;
 }

@@ -36,15 +36,15 @@ export function Footer() {
     staleTime: 300000,
   });
 
-  const siteLogo = settings?.site_logo;
+  const footerLogo = settings?.footer_logo || settings?.site_logo;
 
   return (
     <footer className="bg-footer text-footer-text pt-16 pb-8">
       <div className="container-main py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="sm:col-span-2 lg:col-span-1">
-            {siteLogo ? (
-              <img src={siteLogo} className="h-8 w-auto mb-4" alt="Logo" />
+            {footerLogo ? (
+              <img src={footerLogo} className="h-8 w-auto mb-4" alt="Logo" />
             ) : (
               <h3 className="text-footer-title text-lg font-semibold mb-4">
                 Piece <span className="text-primary">Style</span>

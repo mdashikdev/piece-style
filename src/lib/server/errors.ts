@@ -12,6 +12,7 @@ export function handleError(err: unknown) {
   if (err instanceof AppError) {
     return NextResponse.json({ success: false, error: err.message }, { status: err.statusCode });
   }
+  const message = err instanceof Error ? err.message : 'Internal server error';
   console.error(err);
-  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+  return NextResponse.json({ success: false, error: message }, { status: 500 });
 }

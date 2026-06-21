@@ -16,8 +16,10 @@ export default function AdminSettingsPage() {
 
   const [form, setForm] = useState<Record<string, string>>({});
   const [logoUploading, setLogoUploading] = useState(false);
+  const [footerLogoUploading, setFooterLogoUploading] = useState(false);
   const [faviconUploading, setFaviconUploading] = useState(false);
   const logoRef = useRef<HTMLInputElement>(null);
+  const footerLogoRef = useRef<HTMLInputElement>(null);
   const faviconRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -40,6 +42,18 @@ export default function AdminSettingsPage() {
       toast.success('Logo uploaded');
     } catch { toast.error('Upload failed'); }
     finally { setLogoUploading(false); }
+  };
+
+  const uploadFooterLogo = async (file: File) => {
+    setFooterLogoUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setForm(f => ({ ...f, footer_logo: res.data.data.url }));
+      toast.success('Footer logo uploaded');
+    } catch { toast.error('Upload failed'); }
+    finally { setFooterLogoUploading(false); }
   };
 
   const uploadFavicon = async (file: File) => {
@@ -80,7 +94,7 @@ export default function AdminSettingsPage() {
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
       <div className="space-y-6 max-w-2xl">
         {/* Logo & Favicon */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           <div className="bg-white rounded-lg border border-gray-200 p-5">
             <label className="text-xs text-gray-500 block mb-2 font-medium">Site Logo</label>
             {form.site_logo && (
@@ -91,6 +105,18 @@ export default function AdminSettingsPage() {
             <div className="flex items-center gap-2">
               <input ref={logoRef} type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadLogo(f); }} className="text-sm flex-1" />
               {logoUploading && <Loader2 size={16} className="animate-spin text-primary shrink-0" />}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-5">
+            <label className="text-xs text-gray-500 block mb-2 font-medium">Footer Logo</label>
+            {form.footer_logo && (
+              <div className="mb-3 rounded-lg overflow-hidden border bg-gray-800 h-24 flex items-center justify-center p-2">
+                <img src={form.footer_logo} className="max-h-full max-w-full object-contain" />
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <input ref={footerLogoRef} type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFooterLogo(f); }} className="text-sm flex-1" />
+              {footerLogoUploading && <Loader2 size={16} className="animate-spin text-primary shrink-0" />}
             </div>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-5">

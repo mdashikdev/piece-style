@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/store/adminAuth';
+import { useQuery } from '@tanstack/react-query';
+import { adminApi } from '@/lib/adminApi';
 import { LayoutDashboard, Package, ShoppingCart, Users, Tags, Star, Image, FileText, Settings, LogOut, Menu, X, Gift, ListTree, User, Megaphone, Monitor, ScrollText } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -30,6 +32,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, token, logout, setAuth } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+
+  const { data: settings } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: () => adminApi.get('/settings').then(r => r.data.data),
+    enabled: !!token && hydrated,
+    staleTime: 300000,
+  });
 
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
 
@@ -71,7 +80,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-14 lg:h-16 flex items-center px-6 border-b border-gray-200">
-          <Link href="/admin" className="text-lg font-bold">Piece <span className="text-primary">Style</span> <span className="text-xs text-gray-400 font-normal">Admin</span></Link>
+          <Link href="/admin" className="flex items-center gap-2">
+            {settings?.site_logo ? (
+              <img src={settings.site_logo} className="h-7 w-auto" alt="Logo" />
+            ) : (
+              <span className="text-lg font-bold">Piece <span className="text-primary">Style</span></span>
+            )}
+            <span className="text-xs text-gray-400 font-normal">Admin</span>
+          </Link>
         </div>
         <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
           {navItems.map((item) => {
