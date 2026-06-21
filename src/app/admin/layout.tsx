@@ -26,6 +26,18 @@ const navItems = [
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
+function hexToRgb(hex: string) {
+  const v = parseInt(hex.replace('#', ''), 16);
+  return { r: (v >> 16) & 255, g: (v >> 8) & 255, b: v & 255 };
+}
+function rgbToHex(r: number, g: number, b: number) {
+  return '#' + [r, g, b].map(c => Math.max(0, Math.min(255, Math.round(c))).toString(16).padStart(2, '0')).join('');
+}
+function adjustColor(hex: string, amount: number) {
+  const { r, g, b } = hexToRgb(hex);
+  return rgbToHex(r + amount, g + amount, b + amount);
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -50,6 +62,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     setHydrated(true);
   }, []);
+
+  const primaryColor = settings?.primary_color || '#00a7e1';
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary', primaryColor);
+    root.style.setProperty('--color-primary-hover', adjustColor(primaryColor, -10));
+    root.style.setProperty('--color-primary-light', adjustColor(primaryColor, 45));
+    root.style.setProperty('--color-primary-dark', adjustColor(primaryColor, -25));
+  }, [primaryColor]);
 
   const isLoginPage = pathname === '/admin/login';
 
