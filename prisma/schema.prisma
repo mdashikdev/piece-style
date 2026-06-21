@@ -34,7 +34,7 @@ model Product {
   comparePrice Float?           @map("compare_price")
   sku         String
   stock       Int              @default(0)
-  images      String           @default("[]")
+  images      String           @default("[]") @db.VarChar(5000)
   featured    Boolean          @default(false)
   status      String           @default("ACTIVE")
   categoryId  String           @map("category_id")
@@ -160,11 +160,11 @@ model Review {
   user              User     @relation(fields: [userId], references: [id])
   rating            Int
   comment           String   @db.Text
-  images            String   @default("[]")
+  images            String   @default("[]") @db.VarChar(5000)
   status            String   @default("PENDING")
   isVerifiedPurchase Boolean @default(false) @map("is_verified_purchase")
-  variantInfo       String   @default("[]") @map("variant_info")
-  sellerReply       String?  @default("[]") @map("seller_reply")
+  variantInfo       String   @default("[]") @map("variant_info") @db.VarChar(5000)
+  sellerReply       String?  @default("[]") @map("seller_reply") @db.VarChar(5000)
   likeCount         Int      @default(0) @map("like_count")
   likes             ReviewLike[]
   createdAt         DateTime @default(now()) @map("created_at")
